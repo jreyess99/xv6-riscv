@@ -27,7 +27,7 @@
 Tras constantes fallas del toolchain, y buscando respuestas en internet, resulta que personas con el mismo sistema operativo tuvieron el mismo error y la respuesta de uno de los colaboradores del repositorio homebrew-riscv fue: "I can't reproduce the error, but I do not have machine with macOS 12 currently. The error message appears to originating in rvv code, which in general, is quite recent. I suspect the issue might be that code is expecting a different C++ version. This error may not have occurred for others since their compiler's default C++ version is sufficient. The gcc code could be more compatible if it made the version expectation explicit with a compiler flag. Thus, this might be an issue with riscv-gnu-toolchain.
 Esto fue utlizando el packet manager HOMEBREW, Tambien intente con macports pero de igual manera no se pudo instalar correctamente el toolchain de riscv. En conclusión, Tras Llevar muchos intentos y muchas horas intentando correr xv6 en el SO de mi laptop, opte por utilizar otro sistema operativo.
 
-Solución: Utilice Ubuntu a través de una virtual machine, luego la instalación se realizo sin problemas.
+Solución: Utilice Ubuntu a través de una virtual machine, luego la instalación de XV6 se realizo sin problemas.
 
 ## Pasos realizados en git  
 -    Para moverse entre ramas:
