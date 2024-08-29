@@ -35,12 +35,18 @@ Solución: Utilice Ubuntu a través de una virtual machine, luego la instalació
         -    git checkout -b julian_reyes_t0
 -    En la rama julian_reyes_t0, para agregar y subir cambios
         -    git add .
+
 #Configuración de usuario
+       
         -    git config --global user.name "Julián Reyes"
         -    git config --global user.email "julianreyesbollo1@gmail.com"
+
 #Para el commit
+      
         -    git commit -m "Instalación y ejecución de xv6"
         -    git push origin julian_reyes_t0 
+
 #Para corroborar o rehacer el fork:
+      
         -    git remote add fork https://github.com/jreyess99/xv6-riscv.git
         -    git push fork julian_reyes_t0 
