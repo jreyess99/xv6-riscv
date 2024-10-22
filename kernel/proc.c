@@ -124,6 +124,9 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  p->priority = 0;
+  p->boost = 1;
+  
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -446,47 +449,56 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-
   c->proc = 0;
+
   for(;;){
-    // The most recent process to run may have had interrupts
-    // turned off; enable them to avoid a deadlock if all
-    // processes are waiting.
-    intr_on();
+    intr_on();  // Habilita interrupciones
 
-    int found = 0;
-    for(p = proc; p < &proc[NPROC]; p++) {
+    struct proc *high_p = 0;
+
+    // Busca el proceso con la mayor prioridad
+    for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
+      if (p->state == RUNNABLE) {
+        // Aumentar la prioridad de todos los procesos RUNNABLE
+        p->priority += p->boost;
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        found = 1;
+        // Si la prioridad es >= 9, cambiar el boost a -1
+        if (p->priority >= 9) {
+          p->boost = -1;
+        }
+
+        // Si la prioridad es <= 0, cambiar el boost a 1
+        else if (p->priority <= 0) {
+          p->boost = 1;
+        }
+
+        // Determina si este proceso tiene mayor prioridad
+        if (high_p == 0 || p->priority < high_p->priority) {
+          high_p = p;
+        }
       }
       release(&p->lock);
     }
-    if(found == 0) {
-      // nothing to run; stop running on this core until an interrupt.
+
+    // Ejecutar el proceso con mayor prioridad
+    if (high_p != 0) {
+      acquire(&high_p->lock);
+      if (high_p->state == RUNNABLE) {
+        high_p->state = RUNNING;
+        c->proc = high_p;
+        swtch(&c->context, &high_p->context);
+        c->proc = 0;
+      }
+      release(&high_p->lock);
+    } else {
       intr_on();
       asm volatile("wfi");
     }
   }
 }
 
-// Switch to scheduler.  Must hold only p->lock
-// and have changed proc->state. Saves and restores
-// intena because intena is a property of this
-// kernel thread, not this CPU. It should
-// be proc->intena and proc->noff, but that would
-// break in the few places where a lock is held but
-// there's no process.
+
 void
 sched(void)
 {

@@ -102,3 +102,15 @@ sys_getppid(void)
     return 0;  
 }
 
+uint64
+sys_getpriority(void)
+{
+  return myproc()->priority;
+}
+
+uint64
+sys_getboost(void)
+{
+  return myproc()->boost;
+}
+
