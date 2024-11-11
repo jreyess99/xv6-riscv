@@ -91,3 +91,40 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+uint64
+sys_mprotect(void)
+{
+  uint64 addr;
+  int len;
+
+  // Obtener los argumentos
+  argaddr(0, &addr);
+  argint(1, &len);
+
+  // Validar los argumentos
+  if(len < 1)
+    return -1;
+
+  // Llamar a la función de protección de memoria
+  return mprotect(addr, len);
+}
+
+uint64
+sys_munprotect(void)
+{
+  uint64 addr;
+  int len;
+
+  // Obtener los argumentos
+  argaddr(0, &addr);
+  argint(1, &len);
+
+  // Validar los argumentos
+  if(len < 1)
+    return -1;
+
+  // Llamar a la función de desprotección de memoria
+  return munprotect(addr, len);
+}
